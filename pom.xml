@@ -61,6 +61,7 @@
                         <source>${java.version}</source>
                         <target>${java.version}</target>
                         <encoding>${project.build.sourceEncoding}</encoding>
+                        <proc>full</proc>
                         <maxmem>512M</maxmem>
                     </configuration>
                 </plugin>
@@ -479,7 +480,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <commons-io.version>2.6</commons-io.version>
-        <cxf.version>3.2.7</cxf.version>
+        <cxf.version>4.2.4</cxf.version>
         <cxf-rt-javassist.version>3.0.x.20260630-SNAPSHOT</cxf-rt-javassist.version>
         <fastjson.version>1.2.75</fastjson.version>
         <maven.version>3.0</maven.version>
@@ -664,13 +665,6 @@
             <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- For Commons IO -->
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
             <scope>test</scope>
         </dependency>
             <!-- For JUnit -->
