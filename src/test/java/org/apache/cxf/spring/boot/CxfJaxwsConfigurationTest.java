@@ -17,96 +17,32 @@ import org.springframework.context.ApplicationContext;
 
 import java.util.Map;
 import java.net.ServerSocket;
-import java.time.Duration;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
+import org.apache.cxf.BusFactory;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CxfJaxwsConfigurationTest {
     @Test
-    void startsConfiguredJmxConnectorAndClosesIt() throws Exception {
+    void enabledJmxManagerRegistersLocallyWithoutOpeningRmiPort() throws Exception {
         int port;
         try (ServerSocket socket = new ServerSocket(0)) {
             port = socket.getLocalPort();
         }
-        String address = "service:jmx:rmi:///jndi/rmi://localhost:" + port + "/jmxrmi";
-        MBeanServer server = MBeanServerFactory.createMBeanServer("cxf-test");
-        InstrumentationManager manager = mock(InstrumentationManager.class);
-        when(manager.getMBeanServer()).thenReturn(server);
-        CxfJaxwsManagerProperties properties = new CxfJaxwsManagerProperties();
-        properties.setJmxServiceURL(address);
-        assertTrue(properties.isCreateMBServerConnectorFactory());
-        CxfJaxwsManagerConfiguration configuration = new CxfJaxwsManagerConfiguration();
-        try (JmxConnectorServerAdapter ignored = configuration.jmxConnectorServer(manager, properties);
-             JMXConnector remote = JMXConnectorFactory.connect(new JMXServiceURL(address))) {
-            assertEquals(server.getMBeanCount(), remote.getMBeanServerConnection().getMBeanCount());
-        } finally {
-            MBeanServerFactory.releaseMBeanServer(server);
-        }
-    }
-
-    @Test
-    void leavesAnExistingJmxRegistryOwnedByTheApplication() throws Exception {
-        int port;
-        try (ServerSocket socket = new ServerSocket(0)) {
-            port = socket.getLocalPort();
-        }
-        Registry registry = LocateRegistry.createRegistry(port);
-        MBeanServer server = MBeanServerFactory.createMBeanServer("cxf-existing-registry");
-        CxfJaxwsManagerProperties properties = new CxfJaxwsManagerProperties();
-        properties.setJmxServiceURL("service:jmx:rmi:///jndi/rmi://localhost:" + port + "/jmxrmi");
-        try {
-            try (JmxConnectorServerAdapter ignored = new JmxConnectorServerAdapter(server, properties)) {
-                assertTrue(registry.list().length > 0);
-            }
-            assertNotNull(registry.list());
-        } finally {
-            UnicastRemoteObject.unexportObject(registry, true);
-            MBeanServerFactory.releaseMBeanServer(server);
-        }
-    }
-
-    @Test
-    void rejectsAnUninitializedJmxManager() {
-        CxfJaxwsManagerProperties properties = new CxfJaxwsManagerProperties();
-        assertThrows(IllegalStateException.class,
-                () -> new JmxConnectorServerAdapter(null, properties));
-    }
-
-    @Test
-    void startsThreadedJmxConnectorWithConfiguredDaemonSetting() throws Exception {
-        int port;
-        try (ServerSocket socket = new ServerSocket(0)) {
-            port = socket.getLocalPort();
-        }
-        String address = "service:jmx:rmi:///jndi/rmi://localhost:" + port + "/jmxrmi";
-        MBeanServer server = MBeanServerFactory.createMBeanServer("cxf-threaded");
-        CxfJaxwsManagerProperties properties = new CxfJaxwsManagerProperties();
-        properties.setJmxServiceURL(address);
-        properties.setThreaded(true);
-        properties.setDaemon(true);
-        try (JmxConnectorServerAdapter ignored = new JmxConnectorServerAdapter(server, properties)) {
-            assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
-                while (true) {
-                    try (JMXConnector remote = JMXConnectorFactory.connect(new JMXServiceURL(address))) {
-                        assertEquals(server.getMBeanCount(), remote.getMBeanServerConnection().getMBeanCount());
-                        return;
-                    } catch (java.io.IOException notStartedYet) {
-                        Thread.yield();
+        new WebApplicationContextRunner()
+                .withBean(Bus.class, () -> BusFactory.newInstance().createBus())
+                .withUserConfiguration(CxfJaxwsManagerConfiguration.class)
+                .withPropertyValues("cxf.manager.enabled=true",
+                        "cxf.manager.jmx-service-url=service:jmx:rmi:///jndi/rmi://localhost:" + port + "/jmxrmi")
+                .run(context -> {
+                    assertTrue(context.containsBean("instrumentationManager"));
+                    assertNotNull(context.getBean(InstrumentationManager.class).getMBeanServer());
+                    assertEquals(0, context.getBeansOfType(javax.management.remote.JMXConnectorServer.class).size());
+                    try (ServerSocket available = new ServerSocket(port)) {
+                        assertEquals(port, available.getLocalPort());
                     }
-                }
-            });
-        } finally {
-            MBeanServerFactory.releaseMBeanServer(server);
-        }
+                });
     }
 
     @Test

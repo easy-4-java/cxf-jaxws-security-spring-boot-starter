@@ -65,14 +65,6 @@ public class CxfJaxwsManagerConfiguration {
 	    return mgr;
 	}
 
-	@Bean(destroyMethod = "close")
-	@ConditionalOnProperty(prefix = CxfJaxwsManagerProperties.PREFIX,
-			name = "create-mb-server-connector-factory", havingValue = "true", matchIfMissing = true)
-	public JmxConnectorServerAdapter jmxConnectorServer(InstrumentationManager manager,
-			CxfJaxwsManagerProperties properties) throws java.io.IOException {
-		return new JmxConnectorServerAdapter(manager.getMBeanServer(), properties);
-	}
-
 	/**
 	 * Create the {@link CounterRepository} wired to the CXF bus, used to track
 	 * performance counters for the published endpoints.
