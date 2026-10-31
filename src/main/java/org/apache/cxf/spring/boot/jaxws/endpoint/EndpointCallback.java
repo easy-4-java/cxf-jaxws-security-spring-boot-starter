@@ -15,7 +15,7 @@
  */
 package org.apache.cxf.spring.boot.jaxws.endpoint;
 
-import javax.xml.ws.Endpoint;
+import jakarta.xml.ws.Endpoint;
 
 import org.apache.cxf.jaxws.EndpointImpl;
 
