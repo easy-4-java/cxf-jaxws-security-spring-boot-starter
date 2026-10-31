@@ -75,7 +75,7 @@ public class EndpointApiTemplate {
 	 */
 	public Endpoint publish(String addr, Object implementor, EndpointCallback callback) {
 
-		EndpointImpl endpoint = new EndpointImpl(bus, implementor);
+		EndpointImpl endpoint = newEndpoint(implementor);
 
 		callback.doCallback(implementor, endpoint);
 
@@ -85,6 +85,10 @@ public class EndpointApiTemplate {
 		endpoints.put(addr, endpoint);
 
 		return endpoint;
+	}
+
+	protected EndpointImpl newEndpoint(Object implementor) {
+		return new EndpointImpl(bus, implementor);
 	}
 	
 	/**
