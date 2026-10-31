@@ -585,7 +585,7 @@
         </dependency>
         <!-- 
         https://mvnrepository.com/artifact/com.alibaba/dubbo-common
-        <!-- https://mvnrepository.com/artifact/com.alibaba/dubbo-common -->
+        https://mvnrepository.com/artifact/com.alibaba/dubbo-common
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>dubbo-common</artifactId>
