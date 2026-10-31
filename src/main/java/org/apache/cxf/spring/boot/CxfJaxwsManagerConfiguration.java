@@ -60,7 +60,17 @@ public class CxfJaxwsManagerConfiguration {
 		InstrumentationManagerImpl mgr = new InstrumentationManagerImpl();
 		mgr.setBus(bus);
 		mgr.setEnabled(properties.isEnabled());
+		mgr.setServerName(properties.getServerName());
+		mgr.setUsePlatformMBeanServer(properties.isUsePlatformMBeanServer());
 	    return mgr;
+	}
+
+	@Bean(destroyMethod = "close")
+	@ConditionalOnProperty(prefix = CxfJaxwsManagerProperties.PREFIX,
+			name = "create-mb-server-connector-factory", havingValue = "true", matchIfMissing = true)
+	public JmxConnectorServerAdapter jmxConnectorServer(InstrumentationManager manager,
+			CxfJaxwsManagerProperties properties) throws java.io.IOException {
+		return new JmxConnectorServerAdapter(manager.getMBeanServer(), properties);
 	}
 
 	/**
