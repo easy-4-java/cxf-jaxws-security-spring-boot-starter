@@ -17,7 +17,7 @@ package org.apache.cxf.spring.boot.jaxws.callback;
 
 import java.util.Arrays;
 
-import javax.xml.ws.Endpoint;
+import jakarta.xml.ws.Endpoint;
 
 import org.apache.cxf.ext.logging.LoggingFeature;
 import org.apache.cxf.ext.logging.LoggingInInterceptor;
