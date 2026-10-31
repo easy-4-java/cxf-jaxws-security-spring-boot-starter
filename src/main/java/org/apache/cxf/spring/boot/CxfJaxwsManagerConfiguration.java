@@ -60,8 +60,6 @@ public class CxfJaxwsManagerConfiguration {
 		InstrumentationManagerImpl mgr = new InstrumentationManagerImpl();
 		mgr.setBus(bus);
 		mgr.setEnabled(properties.isEnabled());
-		mgr.setServerName(properties.getServerName());
-		mgr.setUsePlatformMBeanServer(properties.isUsePlatformMBeanServer());
 	    return mgr;
 	}
 

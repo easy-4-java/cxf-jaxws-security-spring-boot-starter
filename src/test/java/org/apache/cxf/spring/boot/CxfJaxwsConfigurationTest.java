@@ -17,13 +17,48 @@ import org.springframework.context.ApplicationContext;
 
 import java.util.Map;
 import java.net.ServerSocket;
+import java.lang.management.ManagementFactory;
 import org.apache.cxf.BusFactory;
+import org.apache.cxf.management.jmx.InstrumentationManagerImpl;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CxfJaxwsConfigurationTest {
+    @Test
+    void managerKeepsPlatformServerSelectedOnTheBus() {
+        Bus bus = BusFactory.newInstance().createBus();
+        bus.setProperty("bus.jmx.usePlatformMBeanServer", true);
+        CxfJaxwsManagerProperties properties = new CxfJaxwsManagerProperties();
+        properties.setEnabled(true);
+        InstrumentationManagerImpl manager = (InstrumentationManagerImpl)
+                new CxfJaxwsManagerConfiguration().instrumentationManager(bus, properties);
+        try {
+            manager.init();
+            assertSame(ManagementFactory.getPlatformMBeanServer(), manager.getMBeanServer());
+        } finally {
+            manager.shutdown();
+            bus.shutdown(true);
+        }
+    }
+
+    @Test
+    void managerKeepsCxfsDefaultMBeanDomain() {
+        Bus bus = BusFactory.newInstance().createBus();
+        CxfJaxwsManagerProperties properties = new CxfJaxwsManagerProperties();
+        properties.setEnabled(true);
+        InstrumentationManagerImpl manager = (InstrumentationManagerImpl)
+                new CxfJaxwsManagerConfiguration().instrumentationManager(bus, properties);
+        try {
+            manager.init();
+            assertEquals("org.apache.cxf", manager.getMBeanServer().getDefaultDomain());
+        } finally {
+            manager.shutdown();
+            bus.shutdown(true);
+        }
+    }
+
     @Test
     void enabledJmxManagerRegistersLocallyWithoutOpeningRmiPort() throws Exception {
         int port;
