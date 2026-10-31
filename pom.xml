@@ -499,7 +499,7 @@
         
         <!-- Source: https://github.com/easy-4-java/cxf-rt-javassist — easy4j cxf-rt-javassist -->
         <dependency>
-            <groupId>io.github.hiwepy</groupId>
+            <groupId>com.github.hiwepy</groupId>
             <artifactId>cxf-rt-javassist</artifactId>
             <version>${cxf-rt-javassist.version}</version>
         </dependency>
@@ -585,7 +585,7 @@
         </dependency>
         <!-- 
         https://mvnrepository.com/artifact/com.alibaba/dubbo-common
-        <!-- https://mvnrepository.com/artifact/com.alibaba/dubbo-common -->
+        https://mvnrepository.com/artifact/com.alibaba/dubbo-common
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>dubbo-common</artifactId>
