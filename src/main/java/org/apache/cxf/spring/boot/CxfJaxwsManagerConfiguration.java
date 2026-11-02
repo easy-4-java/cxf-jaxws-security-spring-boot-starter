@@ -30,12 +30,11 @@ public class CxfJaxwsManagerConfiguration {
 	public InstrumentationManager instrumentationManager(Bus bus, CxfJaxwsManagerProperties properties) {
 		InstrumentationManagerImpl mgr = new InstrumentationManagerImpl();
 		mgr.setBus(bus);
-		mgr.setCreateMBServerConnectorFactory(properties.isCreateMBServerConnectorFactory());
-		mgr.setDaemon(properties.isDaemon());
+		if (properties.isCreateMBServerConnectorFactory()) {
+			LOG.warn("CXF 4 no longer provides an embedded JMX connector; configure one in the application server if needed");
+		}
 		mgr.setEnabled(properties.isEnabled());
-		mgr.setJMXServiceURL(properties.getJmxServiceURL());
 		mgr.setServerName(properties.getServerName());
-		mgr.setThreaded(properties.isThreaded());
 		mgr.setUsePlatformMBeanServer(properties.isUsePlatformMBeanServer());
 	    return mgr;
 	}
