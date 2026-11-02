@@ -19,7 +19,7 @@ public class CxfJaxwsManagerProperties {
 	/**
 	 * If true, a connector is created on the MBeanServer.
 	 */
-	private boolean createMBServerConnectorFactory = true;
+	private boolean createMBServerConnectorFactory = false;
 	/**
 	 * Determines if the creation of the MBean connector is performed in this thread
 	 * or in a separate thread. Only relevant if createMBServerConnectorFactory is
