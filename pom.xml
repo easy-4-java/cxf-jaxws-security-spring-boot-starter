@@ -415,7 +415,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <commons-io.version>2.6</commons-io.version>
         <cxf.version>3.2.7</cxf.version>
-        <cxf-rt-javassist.version>1.0.3.RELEASE</cxf-rt-javassist.version>
+        <cxf-rt-javassist.version>1.0.x.20260630-SNAPSHOT</cxf-rt-javassist.version>
         <fastjson.version>1.2.75</fastjson.version>
         <maven.version>3.0</maven.version>
            <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
@@ -585,7 +585,7 @@
         </dependency>
         <!-- 
         https://mvnrepository.com/artifact/com.alibaba/dubbo-common
-        <!-- https://mvnrepository.com/artifact/com.alibaba/dubbo-common -->
+        https://mvnrepository.com/artifact/com.alibaba/dubbo-common
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>dubbo-common</artifactId>
