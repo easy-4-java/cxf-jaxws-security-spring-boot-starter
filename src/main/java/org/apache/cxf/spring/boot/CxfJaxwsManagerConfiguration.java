@@ -30,14 +30,18 @@ public class CxfJaxwsManagerConfiguration {
 	public InstrumentationManager instrumentationManager(Bus bus, CxfJaxwsManagerProperties properties) {
 		InstrumentationManagerImpl mgr = new InstrumentationManagerImpl();
 		mgr.setBus(bus);
-		mgr.setCreateMBServerConnectorFactory(properties.isCreateMBServerConnectorFactory());
-		mgr.setDaemon(properties.isDaemon());
 		mgr.setEnabled(properties.isEnabled());
-		mgr.setJMXServiceURL(properties.getJmxServiceURL());
 		mgr.setServerName(properties.getServerName());
-		mgr.setThreaded(properties.isThreaded());
 		mgr.setUsePlatformMBeanServer(properties.isUsePlatformMBeanServer());
 	    return mgr;
+	}
+
+	@Bean(destroyMethod = "close")
+	@ConditionalOnProperty(prefix = CxfJaxwsManagerProperties.PREFIX,
+			name = "create-mb-server-connector-factory", havingValue = "true", matchIfMissing = true)
+	public JmxConnectorServerAdapter jmxConnectorServer(InstrumentationManager manager,
+			CxfJaxwsManagerProperties properties) throws java.io.IOException {
+		return new JmxConnectorServerAdapter(manager.getMBeanServer(), properties);
 	}
 	
 	// Wiring the counter repository 
