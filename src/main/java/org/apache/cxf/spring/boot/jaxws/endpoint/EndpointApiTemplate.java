@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 
-import javax.xml.ws.Endpoint;
+import jakarta.xml.ws.Endpoint;
 
 import org.apache.cxf.Bus;
 import org.apache.cxf.endpoint.ServerImpl;
@@ -74,7 +74,7 @@ public class EndpointApiTemplate {
 	 */
 	public Endpoint publish(String addr, Object implementor, EndpointCallback callback) {
 
-		EndpointImpl endpoint = new EndpointImpl(bus, implementor);
+		EndpointImpl endpoint = newEndpoint(implementor);
 
 		callback.doCallback(implementor, endpoint);
 
@@ -84,6 +84,10 @@ public class EndpointApiTemplate {
 		endpoints.put(addr, endpoint);
 
 		return endpoint;
+	}
+
+	protected EndpointImpl newEndpoint(Object implementor) {
+		return new EndpointImpl(bus, implementor);
 	}
 	
 	/**
