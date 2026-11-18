@@ -40,9 +40,15 @@ import org.apache.cxf.staxutils.StaxUtils;
 import org.apache.cxf.transport.MessageObserver;
 
 public class MediatorInInterceptor extends AbstractPhaseInterceptor<SoapMessage> {
+	private final Bus bus;
 
 	public MediatorInInterceptor() {
+		this(CXFBusFactory.getDefaultBus());
+	}
+
+	public MediatorInInterceptor(Bus bus) {
 		super(Phase.POST_STREAM);
+		this.bus = bus;
 		addBefore(StaxInInterceptor.class.getName());
 	}
 
@@ -84,8 +90,10 @@ public class MediatorInInterceptor extends AbstractPhaseInterceptor<SoapMessage>
 		}
 
 		// Look up for all available endpoints registered on the bus
-		Bus bus = CXFBusFactory.getDefaultBus();
 		ServerRegistry serverRegistry = bus.getExtension(ServerRegistry.class);
+		if (serverRegistry == null) {
+			return;
+		}
 		List<Server> servers = serverRegistry.getServers();
 
 		// if the incoming message has a namespace contained "2007/03/21", we redirect
@@ -106,6 +114,9 @@ public class MediatorInInterceptor extends AbstractPhaseInterceptor<SoapMessage>
 		}
 		
 		// Redirect the request
+		if (targetServer == null) {
+			return;
+		}
 		MessageObserver mo = targetServer.getDestination().getMessageObserver();
 		mo.onMessage(message);
 
